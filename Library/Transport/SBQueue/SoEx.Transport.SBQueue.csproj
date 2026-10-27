@@ -4,6 +4,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>SoEx.Transport.SBQueue</PackageId>
+    <!-- Coept's interim build of the alpha-4.3 package (the transaction suppression around the send), published to
+         the Coept GitHub Packages feed until the change ships upstream; every dependency stays at alpha-4.3. -->
+    <Version>0.0.0-alpha-4.3-coept.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
