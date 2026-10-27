@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Transactions;
 using Azure.Messaging.ServiceBus;
 using SoEx.Abstractions;
 using SoEx.Topology;
@@ -43,8 +44,14 @@ namespace SoEx.Transport.SBQueue
                 try
                 {
                     var sender = await Sender().ConfigureAwait(false);
-                    await sender.SendMessageAsync(new ServiceBusMessage(new BinaryData(payload)))
-                        .ConfigureAwait(false);
+                    // A queue is not a participant in the caller's transaction: the Service Bus SDK enlists a send
+                    // in Transaction.Current when there is one (Serializable only, and never alongside another
+                    // resource manager), so a send from inside a caller's TransactionScope is suppressed from it.
+                    using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        await sender.SendMessageAsync(new ServiceBusMessage(new BinaryData(payload)))
+                            .ConfigureAwait(false);
+                    }
                     return [];
                 }
                 catch
